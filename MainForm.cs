@@ -9,7 +9,7 @@ namespace ezHashCheck
     public partial class MainForm : Form
     {
         /// <summary>
-        /// This enumation lists all the hashing methods this program supports.
+        /// This enum lists all the hashing methods this program supports.
         /// </summary>
         enum HashMethods
         {
