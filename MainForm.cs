@@ -22,11 +22,12 @@ namespace ezHashCheck
         /// </summary>
         const String MessageTitle = "ezHashCheck";
 
+
         public MainForm()
         {
             InitializeComponent();
 
-            //this.Icon = ezHashCheck.Properties.Resources.Icon;
+            //Center the main form.
             this.StartPosition = FormStartPosition.CenterScreen;
 
             //Add selectable hash methods in the drop down.
@@ -36,6 +37,8 @@ namespace ezHashCheck
             //give the drop down a default value.
             HashMethodsComboBox.SelectedIndex = 0;
         }
+
+        #region Event Handlers
 
         /// <summary>
         /// This method runs when the user presses the 'Check Hash' button.
@@ -54,21 +57,19 @@ namespace ezHashCheck
                 MessageBox.Show("Make sure you have entered a hash string AND chosen a file to check the hash of!", MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            if(!OnlyHexInString(hashString))
+            else if(!OnlyHexInString(hashString))
             {
                 MessageBox.Show("Hash string must be hexadecimal!", MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            else
-            {
-                
+            else //user input sane, continue hash check.
+            {        
                 byte[] newHash = null;
                 HashAlgorithm hashAlgorithm = null;
 
                 String selectedHashMethod = HashMethodsComboBox.SelectedItem.ToString();
 
+                //select hash method based on user input.
                 if (selectedHashMethod == HashMethods.SHA1.ToString())
                 {
                     hashAlgorithm = SHA1.Create();
@@ -78,6 +79,7 @@ namespace ezHashCheck
                     hashAlgorithm = MD5.Create();
                 }
 
+                //assuming a hash algorithm has been selected, use it to compare the hash string  and the selected file.
                 if (hashAlgorithm != null)
                 {
                     byte[] oldHash = StringToByteArray(hashString);
@@ -107,6 +109,7 @@ namespace ezHashCheck
             }
         }
 
+
         /// <summary>
         /// This method runs when the user clicks the 'Find File' button (...) - uses an OpenFileDialog.
         /// </summary>
@@ -123,6 +126,10 @@ namespace ezHashCheck
             }
         }
 
+        #endregion
+
+        #region Helper Functions
+
         /// <summary>
         /// This function takes a string and returns it as a byte array. The string must have an even number of chars!
         /// </summary>
@@ -138,6 +145,7 @@ namespace ezHashCheck
             return bytes;
         }
 
+
         /// <summary>
         /// This function checks to see if a string is hex. The string must have an even number of chars!
         /// </summary>
@@ -145,5 +153,7 @@ namespace ezHashCheck
         {
             return test.Count() % 2 == 0 && System.Text.RegularExpressions.Regex.IsMatch(test, @"\A\b[0-9a-fA-F]+\b\Z");
         }
+
+        #endregion
     }
 }
