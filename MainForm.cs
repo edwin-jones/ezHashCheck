@@ -113,8 +113,6 @@ namespace ezHashCheck
         /// <summary>
         /// This method runs when the user clicks the 'Find File' button (...) - uses an OpenFileDialog.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void FindFileButton_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
