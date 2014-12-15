@@ -22,7 +22,9 @@ namespace ezHashCheck
         /// </summary>
         const String MessageTitle = "ezHashCheck";
 
-
+        /// <summary>
+        /// CTOR
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
