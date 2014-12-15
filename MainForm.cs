@@ -11,9 +11,11 @@ namespace ezHashCheck
         /// <summary>
         /// This enum lists all the hashing methods this program supports.
         /// </summary>
-        enum HashMethods
+        enum HashMethod
         {
             SHA1,
+            SHA256,
+            SHA512,
             MD5
         }
 
@@ -33,8 +35,10 @@ namespace ezHashCheck
             this.StartPosition = FormStartPosition.CenterScreen;
 
             //Add selectable hash methods in the drop down.
-            HashMethodsComboBox.Items.Add(HashMethods.SHA1.ToString());
-            HashMethodsComboBox.Items.Add(HashMethods.MD5.ToString());
+            HashMethodsComboBox.Items.Add(HashMethod.SHA1);
+            HashMethodsComboBox.Items.Add(HashMethod.SHA256);
+            HashMethodsComboBox.Items.Add(HashMethod.SHA512);
+            HashMethodsComboBox.Items.Add(HashMethod.MD5);
 
             //give the drop down a default value.
             HashMethodsComboBox.SelectedIndex = 0;
@@ -69,16 +73,26 @@ namespace ezHashCheck
                 byte[] newHash = null;
                 HashAlgorithm hashAlgorithm = null;
 
-                String selectedHashMethod = HashMethodsComboBox.SelectedItem.ToString();
+                HashMethod selectedHashMethod = (HashMethod)HashMethodsComboBox.SelectedItem;
 
                 //select hash method based on user input.
-                if (selectedHashMethod == HashMethods.SHA1.ToString())
+                switch(selectedHashMethod)
                 {
-                    hashAlgorithm = SHA1.Create();
-                }
-                else if (selectedHashMethod == HashMethods.MD5.ToString())
-                {
-                    hashAlgorithm = MD5.Create();
+                    case HashMethod.SHA1:
+                        hashAlgorithm = SHA1.Create();
+                        break;
+
+                    case HashMethod.SHA256:
+                        hashAlgorithm = SHA256.Create();
+                        break;
+
+                    case HashMethod.SHA512:
+                        hashAlgorithm = SHA512.Create();
+                        break;
+
+                    case HashMethod.MD5:
+                        hashAlgorithm = MD5.Create();
+                        break;
                 }
 
                 //assuming a hash algorithm has been selected, use it to compare the hash string  and the selected file.
