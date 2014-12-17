@@ -68,7 +68,7 @@ namespace ezHashCheck
 
                 byte[] newHash = CalculateHashOfFile();
 
-                if (oldHash.SequenceEqual(newHash))
+                if (newHash != null && oldHash.SequenceEqual(newHash))
                 {
                     MessageBox.Show("Hash matches the chosen file.", MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -197,9 +197,9 @@ namespace ezHashCheck
                 {
                     newHash = hashAlgorithm.ComputeHash(stream);
                 }
-            }
 
-            hashAlgorithm.Dispose();
+                hashAlgorithm.Dispose();
+            }
 
             return newHash;
         }
