@@ -31,8 +31,6 @@ namespace ezHashCheck
         {
             InitializeComponent();
 
-         
-
             //Center the main form.
             this.StartPosition = FormStartPosition.CenterScreen;
 
