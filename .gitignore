@@ -46,3 +46,4 @@ Temporary Items
 #ignore temp directories
 bin/
 obj/
+*.pfx
