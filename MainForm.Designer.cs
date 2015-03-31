@@ -38,6 +38,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.CheckHashButton = new System.Windows.Forms.Button();
             this.GenerateHashButton = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // FindFileButton
@@ -70,6 +72,7 @@
             // 
             this.FileToHashTextBox.Location = new System.Drawing.Point(12, 96);
             this.FileToHashTextBox.Name = "FileToHashTextBox";
+            this.FileToHashTextBox.ReadOnly = true;
             this.FileToHashTextBox.Size = new System.Drawing.Size(287, 20);
             this.FileToHashTextBox.TabIndex = 1;
             // 
@@ -120,11 +123,33 @@
             this.GenerateHashButton.UseVisualStyleBackColor = true;
             this.GenerateHashButton.Click += new System.EventHandler(this.GenerateHashButton_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(136, 268);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(58, 13);
+            this.label4.TabIndex = 6;
+            this.label4.Text = "Created by";
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(190, 268);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(67, 13);
+            this.linkLabel1.TabIndex = 7;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "Edwin Jones";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.HomePageLinkLabel_LinkClicked);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(392, 261);
+            this.ClientSize = new System.Drawing.Size(392, 290);
+            this.Controls.Add(this.linkLabel1);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.GenerateHashButton);
             this.Controls.Add(this.CheckHashButton);
             this.Controls.Add(this.label3);
@@ -155,6 +180,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button CheckHashButton;
         private System.Windows.Forms.Button GenerateHashButton;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.LinkLabel linkLabel1;
     }
 }
 

@@ -47,3 +47,7 @@ Temporary Items
 bin/
 obj/
 *.pfx
+*.suo
+*.user
+ezHashCheck.csproj.user
+ezHashCheck.csproj.user

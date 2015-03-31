@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -119,6 +120,15 @@ namespace ezHashCheck
                     FileToHashTextBox.Text = openFileDialog.FileName;
                 }
             }
+        }
+
+
+        /// <summary>
+        /// This method runs when the link label is clicked and navigates to my home page.
+        /// </summary>
+        private void HomePageLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using (Process.Start("http://edwinjones.me.uk")) { }
         }
 
         #endregion
