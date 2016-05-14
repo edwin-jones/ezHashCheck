@@ -46,3 +46,8 @@ Temporary Items
 #ignore temp directories
 bin/
 obj/
+*.pfx
+*.suo
+*.user
+ezHashCheck.csproj.user
+ezHashCheck.csproj.user

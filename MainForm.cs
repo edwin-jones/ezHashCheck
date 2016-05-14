@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -35,10 +36,10 @@ namespace ezHashCheck
             this.StartPosition = FormStartPosition.CenterScreen;
 
             //Add selectable hash methods in the drop down.
+            HashMethodsComboBox.Items.Add(HashMethod.MD5);
             HashMethodsComboBox.Items.Add(HashMethod.SHA1);
             HashMethodsComboBox.Items.Add(HashMethod.SHA256);
             HashMethodsComboBox.Items.Add(HashMethod.SHA512);
-            HashMethodsComboBox.Items.Add(HashMethod.MD5);
 
             //give the drop down a default value.
             HashMethodsComboBox.SelectedIndex = 0;
@@ -51,77 +52,58 @@ namespace ezHashCheck
         /// </summary>
         private void CheckHashButton_Click(object sender, EventArgs e)
         {
-            //local vars
-            Boolean hashMatch = false;
-            String filePath = FileToHashTextBox.Text;
-            String hashString = HashStringTextBox.Text;
-
-
             //check user input.
-            if (String.IsNullOrEmpty(filePath) || String.IsNullOrEmpty(hashString))
+            if (String.IsNullOrEmpty(FileToHashTextBox.Text) || String.IsNullOrEmpty(HashStringTextBox.Text))
             {
                 MessageBox.Show("Make sure you have entered a hash string AND chosen a file to check the hash of!", MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            else if(!OnlyHexInString(hashString))
+            else if (!OnlyHexInString(HashStringTextBox.Text))
             {
                 MessageBox.Show("Hash string must be hexadecimal!", MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             else //user input sane, continue hash check.
-            {        
-                byte[] newHash = null;
-                HashAlgorithm hashAlgorithm = null;
+            {
+                byte[] oldHash = StringToByteArray(HashStringTextBox.Text);
 
-                HashMethod selectedHashMethod = (HashMethod)HashMethodsComboBox.SelectedItem;
+                byte[] newHash = CalculateHashOfFile();
 
-                //select hash method based on user input.
-                switch(selectedHashMethod)
+                if (newHash != null && oldHash.SequenceEqual(newHash))
                 {
-                    case HashMethod.SHA1:
-                        hashAlgorithm = SHA1.Create();
-                        break;
-
-                    case HashMethod.SHA256:
-                        hashAlgorithm = SHA256.Create();
-                        break;
-
-                    case HashMethod.SHA512:
-                        hashAlgorithm = SHA512.Create();
-                        break;
-
-                    case HashMethod.MD5:
-                        hashAlgorithm = MD5.Create();
-                        break;
+                    MessageBox.Show("Hash matches the chosen file.", MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-
-                //assuming a hash algorithm has been selected, use it to compare the hash string  and the selected file.
-                if (hashAlgorithm != null)
+                else
                 {
-                    byte[] oldHash = StringToByteArray(hashString);
-
-                    using (var stream = File.OpenRead(filePath))
-                    {
-                        newHash = hashAlgorithm.ComputeHash(stream);
-                    }
-
-                    if (oldHash.SequenceEqual(newHash))
-                    {
-                        hashMatch = true;
-                    }
-
-                    hashAlgorithm.Dispose();
+                    MessageBox.Show("Hash does not match the chosen file!", MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
 
-            //tell user if the hash matches or not.
-            if (hashMatch)
+
+        /// <summary>
+        /// This method runs when the user clicks the 'Generate Hash' button. It generates a string hash of the file and prints it to the HashStringTextBox.
+        /// </summary>
+        private void GenerateHashButton_Click(object sender, EventArgs e)
+        {
+            //check user input.
+            if (String.IsNullOrEmpty(FileToHashTextBox.Text))
             {
-                MessageBox.Show("Hash matches the chosen file.", MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Make sure you have chosen a file to generate a hash for!", MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            byte[] newHash = CalculateHashOfFile();
+
+            if (newHash != null)
+            {
+                HashMethod selectedHashMethod = (HashMethod)HashMethodsComboBox.SelectedItem;
+                String hashString = ByteArrayToString(newHash);
+                HashStringTextBox.Text = hashString.ToLower(); //make sure the user sees the hash in lower case as this is expected.
             }
             else
             {
-                MessageBox.Show("Hash does not match the chosen file!", MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Hash generation has failed!", MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -140,6 +122,15 @@ namespace ezHashCheck
             }
         }
 
+
+        /// <summary>
+        /// This method runs when the link label is clicked and navigates to my home page.
+        /// </summary>
+        private void HomePageLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using (Process.Start("http://edwinjones.me.uk")) { }
+        }
+
         #endregion
 
         #region Helper Functions
@@ -147,7 +138,7 @@ namespace ezHashCheck
         /// <summary>
         /// This function takes a string and returns it as a byte array. The string must have an even number of chars!
         /// </summary>
-        private Byte[] StringToByteArray(String hex)
+        private byte[] StringToByteArray(String hex)
         {
             int NumberChars = hex.Length;
             byte[] bytes = new byte[NumberChars / 2];
@@ -161,11 +152,66 @@ namespace ezHashCheck
 
 
         /// <summary>
+        /// This function takes a string and returns it as a byte array. The string must have an even number of chars!
+        /// </summary>
+        private String ByteArrayToString(byte[] data)
+        {
+            string hex = BitConverter.ToString(data);
+            return hex.Replace("-", String.Empty);
+        }
+
+
+        /// <summary>
         /// This function checks to see if a string is hex. The string must have an even number of chars!
         /// </summary>
         private Boolean OnlyHexInString(String test)
         {
             return test.Count() % 2 == 0 && System.Text.RegularExpressions.Regex.IsMatch(test, @"\A\b[0-9a-fA-F]+\b\Z");
+        }
+
+
+        /// <summary>
+        /// This function calculate the hash of the chosen file with the chosen method and returns it as an array of bytes
+        /// </summary>
+        private byte[] CalculateHashOfFile()
+        {
+            HashAlgorithm hashAlgorithm = null;
+            HashMethod selectedHashMethod = (HashMethod)HashMethodsComboBox.SelectedItem;
+
+            //select hash method based on user input.
+            switch (selectedHashMethod)
+            {
+                case HashMethod.SHA1:
+                    hashAlgorithm = SHA1.Create();
+                    break;
+
+                case HashMethod.SHA256:
+                    hashAlgorithm = SHA256.Create();
+                    break;
+
+                case HashMethod.SHA512:
+                    hashAlgorithm = SHA512.Create();
+                    break;
+
+                case HashMethod.MD5:
+                    hashAlgorithm = MD5.Create();
+                    break;
+            }
+
+            byte[] newHash = null;
+
+            //assuming a hash algorithm has been selected, use it to compare the hash string  and the selected file.
+            if (hashAlgorithm != null)
+            {
+                using (var stream = File.OpenRead(FileToHashTextBox.Text))
+                {
+                    newHash = hashAlgorithm.ComputeHash(stream);
+                }
+
+                hashAlgorithm.Dispose();
+            }
+
+            return newHash;
         }
 
         #endregion
